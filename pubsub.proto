@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package pubsub;
+
+// El servicio define métodos para publicar y suscribirse.
+service PubSub {
+  // Envía un mensaje a un canal específico.
+  rpc Publish(Message) returns (Ack) {}
+
+  // Suscripción a un canal para recibir mensajes.
+  rpc Subscribe(Channel) returns (stream Message) {}
+
+  // Obtiene la lista de canales disponibles.
+  rpc ListChannels(Empty) returns (ChannelList) {}
+}
+
+// Mensaje que será publicado.
+message Message {
+  string channel = 1;
+  string content = 2;
+}
+
+// Canal al que se quiere suscribir el cliente.
+message Channel {
+  string name = 1;
+}
+
+// Lista de canales disponibles.
+message ChannelList {
+  repeated Channel channels = 1;
+}
+
+// Mensaje vacío para solicitudes sin parámetros.
+message Empty {}
+
+// Acuse de recibo para la publicación de mensajes.
+message Ack {
+  bool success = 1;
+}
