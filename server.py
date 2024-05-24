@@ -23,6 +23,7 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
         self.subscribers = {channel.name: [] for channel in self.channels} # Diccionario para los suscriptores de cada canal
         self.locks = {channel.name: threading.Lock() for channel in self.channels} # Diccionario para el lock de cada canal
         self.semaphores = {channel.name: threading.Semaphore(100) for channel in self.channels} # Diccionario para el semáforo de cada canal
+        self.GLOBAL_lock = threading.Lock()
         logging.info("PubSubService initialized.")
 
 
@@ -42,7 +43,7 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
         lock = self._get_lock(channel)
         semaphore = self._get_semaphore(channel)
 
-        semaphore.acquire()  # Esperar hasta que haya espacio en la cola
+        semaphore.acquire()  # Esperar hasta que haya espacio en la cola --1
 
         with lock:
             message_queue = self.channel_messages[channel]
