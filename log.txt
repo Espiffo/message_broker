@@ -1,63 +1,100 @@
-Server started. Listening on port 50051.Subscriber added to channel test. ID: ipv6:%5B::1%5D:52728 
-Subscriber added to channel test. ID: ipv6:%5B::1%5D:52727 
-Published message to channel test, by ipv6:%5B::1%5D:52727 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52728 
-Published message to channel test, by ipv6:%5B::1%5D:52727 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52728 
-Published message to channel test, by ipv6:%5B::1%5D:52727 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52728 
-Published message to channel test, by ipv6:%5B::1%5D:52728 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52727 
-Published message to channel test, by ipv6:%5B::1%5D:52728 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52727 
-Published message to channel test, by ipv6:%5B::1%5D:52728 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52727 
-Subscriber added to channel test. ID: ipv6:%5B::1%5D:52731 
-Subscriber added to channel test. ID: ipv6:%5B::1%5D:52748 
-Subscriber added to channel test. ID: ipv6:%5B::1%5D:52747 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52727 
-Subscriber removed from channel test. ID: ipv6:%5B::1%5D:52727 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52728 
-Subscriber removed from channel test. ID: ipv6:%5B::1%5D:52728 
-Published message to channel test, by ipv6:%5B::1%5D:52748 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52731 
-Subscriber removed from channel test. ID: ipv6:%5B::1%5D:52731 
-Published message to channel test, by ipv6:%5B::1%5D:52748 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52747 
-Published message to channel test, by ipv6:%5B::1%5D:52748 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52747 
-Published message to channel test, by ipv6:%5B::1%5D:52748 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52747 
-Published message to channel test, by ipv6:%5B::1%5D:52748 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52747 
-Published message to channel test, by ipv6:%5B::1%5D:52748 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52747 
-Published message to channel test, by ipv6:%5B::1%5D:52748 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52747 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52747 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
-Published message to channel test, by ipv6:%5B::1%5D:52748 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52747 
-Subscriber added to channel test. ID: ipv6:%5B::1%5D:52754 
-Published message to channel test, by ipv6:%5B::1%5D:52754 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52747 
-Published message to channel test, by ipv6:%5B::1%5D:52754 
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:52748 
+Server started. Listening on port 50051.Subscriber added to channel test. ID: ipv6:%5B::1%5D:55027 
+
+Subscriber added to channel test. ID: ipv6:%5B::1%5D:55025 
+
+Published message to channel test, by ipv6:%5B::1%5D:55025 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55027 
+
+Published message to channel test, by ipv6:%5B::1%5D:55025 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55027 
+
+Published message to channel test, by ipv6:%5B::1%5D:55025 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55027 
+
+Published message to channel test, by ipv6:%5B::1%5D:55025 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55027 
+
+Published message to channel test, by ipv6:%5B::1%5D:55025 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55027 
+
+Published message to channel test, by ipv6:%5B::1%5D:55027 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55025 
+
+Published message to channel test, by ipv6:%5B::1%5D:55027 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55025 
+
+Published message to channel test, by ipv6:%5B::1%5D:55027 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55025 
+
+Published message to channel test, by ipv6:%5B::1%5D:55027 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55025 
+
+Published message to channel test, by ipv6:%5B::1%5D:55027 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55025 
+
+Published message to channel test, by ipv6:%5B::1%5D:55027 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55025 
+
+Published message to channel test, by ipv6:%5B::1%5D:55027 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55025 
+
+Subscriber added to channel test. ID: ipv6:%5B::1%5D:55042 
+
+Subscriber added to channel test. ID: ipv6:%5B::1%5D:55041 
+
+Published message to channel test, by ipv6:%5B::1%5D:55041 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55025 
+
+Subscriber removed from channel test. ID: ipv6:%5B::1%5D:55025 
+
+Published message to channel test, by ipv6:%5B::1%5D:55041 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55042 
+
+Published message to channel test, by ipv6:%5B::1%5D:55041 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55027 
+
+Subscriber removed from channel test. ID: ipv6:%5B::1%5D:55027 
+
+Published message to channel test, by ipv6:%5B::1%5D:55041 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55042 
+
+Published message to channel test, by ipv6:%5B::1%5D:55041 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55042 
+
+Published message to channel test, by ipv6:%5B::1%5D:55042 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55041 
+
+Published message to channel test, by ipv6:%5B::1%5D:55042 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55041 
+
+Published message to channel test, by ipv6:%5B::1%5D:55042 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55041 
+
+Published message to channel test, by ipv6:%5B::1%5D:55042 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55041 
+
+Published message to channel test, by ipv6:%5B::1%5D:55041 
+
+Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55042 
+
