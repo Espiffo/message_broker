@@ -58,7 +58,7 @@ def run():
             stub.Publish(pubsub_pb2.Message(channel=selected_channel, content=message_content))
             time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
 
-        # Esperar que el listener se detenga antes de finalizar
+        # Esperar que el listener se detenga antes de finalizar :)
         listener_thread.join(timeout=2)
 
 
