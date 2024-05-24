@@ -3,7 +3,9 @@ import pubsub_pb2
 import pubsub_pb2_grpc
 import time
 from threading import Thread
+import threading 
 
+GLOBAL_interuptions_lock = threading.Lock()
 
 def run():
     with grpc.insecure_channel('localhost:50051') as channel:
@@ -33,7 +35,9 @@ def run():
         def listen_for_messages():
             try:
                 for message in stub.Subscribe(pubsub_pb2.Channel(name=selected_channel)):
-                    print(f"Received message on channel '{selected_channel}': {message.content}")
+                        #with GLOBAL_interuptions_lock:
+                            print(f"Received message on channel '{selected_channel}': {message.content}")
+
             except grpc.RpcError as e:
                 print(f"Stream closed with error: {e}")
 
@@ -47,11 +51,12 @@ def run():
         # Publicar mensajes de manera dinámica
         print("You can start sending messages. Type 'exit' to quit.")
         while True:
-            message_content = input("Enter message to send: ")
-            if message_content.lower() == 'exit':
-                break
-            stub.Publish(pubsub_pb2.Message(channel=selected_channel, content=message_content))
-            time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
+            #with GLOBAL_interuptions_lock:
+                message_content = input("Enter message to send: ")
+                if message_content.lower() == 'exit':
+                    break
+                stub.Publish(pubsub_pb2.Message(channel=selected_channel, content=message_content))
+                time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga
 
         # Esperar que el listener se detenga antes de finalizar
         listener_thread.join(timeout=2)

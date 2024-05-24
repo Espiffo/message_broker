@@ -23,8 +23,11 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
         self.subscribers = {channel.name: [] for channel in self.channels} # Diccionario para los suscriptores de cada canal
         self.locks = {channel.name: threading.Lock() for channel in self.channels} # Diccionario para el lock de cada canal
         self.semaphores = {channel.name: threading.Semaphore(100) for channel in self.channels} # Diccionario para el semáforo de cada canal
-        self.GLOBAL_lock = threading.Lock()
+        self.interuptions_lock = threading.Lock()
         logging.info("PubSubService initialized.")
+
+        with open("log.txt", 'w') as file:
+                    file.write('Server started. Listening on port 50051.')
 
 
     def _get_lock(self, channel):  # Obtener el lock para un canal
@@ -33,6 +36,9 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
 
     def _get_semaphore(self, channel):  # Obtener el semáforo para un canal
         return self.semaphores[channel]
+    
+    def _get_interuptions_lock(self):  # Obtener el semáforo para un canal
+        return self.interuptions_lock 
 
 
     def Publish(self, request, context):
@@ -49,6 +55,12 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
             message_queue = self.channel_messages[channel]
             message_queue.put((publisher_id, request.content))  # Publicar mensaje con ID del publicador
             logging.info(f"Published message to channel {request.channel}.")
+
+            lock_interuptions=self._get_interuptions_lock()
+            with lock_interuptions:
+                with open("log.txt", 'a') as file:
+                    file.write(f"Published message to channel {request.channel}, by {publisher_id} \n\n")
+
             return pubsub_pb2.Ack(success=True)
 
 
@@ -64,6 +76,11 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
             self.subscribers[channel].append(subscriber_id)
             logging.info(f"Subscriber added to channel {channel}. ID: {subscriber_id}")
 
+            lock_interuptions=self._get_interuptions_lock()
+            with lock_interuptions:
+                with open("log.txt", 'a') as file:
+                    file.write(f"Subscriber added to channel {channel}. ID: {subscriber_id} \n\n")
+
         try:
             while True:
                 with lock:
@@ -73,6 +90,12 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
                     publisher_id, msg = message_queue.get()  # Obtener mensaje de la cola del canal
                     semaphore.release()  # Liberar un espacio en el semáforo
                 if publisher_id != subscriber_id:  # Excluir al publicador
+
+                    lock_interuptions=self._get_interuptions_lock()
+                    with lock_interuptions:
+                        with open("log.txt", 'a') as file:
+                            file.write(f"Messeage send to channel {channel}, for  subscriber of ID: {subscriber_id} \n\n")
+
                     yield pubsub_pb2.Message(channel=channel, content=msg)
                 else:
                     # Volver a poner el mensaje si es del mismo publicador
@@ -82,6 +105,12 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
         finally:
             with lock:
                 if subscriber_id in self.subscribers[channel]:
+
+                    lock_interuptions=self._get_interuptions_lock()
+                    with lock_interuptions:
+                        with open("log.txt", 'a') as file:
+                            file.write(f"Subscriber removed from channel {channel}. ID: {subscriber_id} \n\n")
+
                     self.subscribers[channel].remove(subscriber_id)
                 logging.info(f"Subscriber removed from channel {channel}. ID: {subscriber_id}")
 
