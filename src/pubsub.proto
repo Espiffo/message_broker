@@ -14,6 +14,16 @@ service PubSub {
   rpc ListChannels(Empty) returns (ChannelList) {}
 }
 
+service Health {
+  // Envía un Ping al servidor para comprobar el estado de la conexión
+  rpc Ping(Empty) returns (Pong) {}
+}
+
+// Mensaje "Pong" en respuesta al Ping
+message Pong {
+  string message = 1;
+}
+
 // Mensaje que será publicado.
 message Message {
   string channel = 1;

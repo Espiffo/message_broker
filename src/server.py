@@ -8,6 +8,11 @@ import threading
 import queue
 
 
+class HealthServicer(pubsub_pb2_grpc.HealthServicer):
+    def Ping(self, request, context):
+        return pubsub_pb2.Pong(message="pong")
+
+
 class PubSubService(pubsub_pb2_grpc.PubSubServicer):
 
     def __init__(self):
@@ -39,28 +44,6 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
 
     def _get_interuptions_lock(self):  # Obtener el semáforo para un canal
         return self.interuptions_lock
-
-    def Publish(self, request, context):
-        publisher_id = context.peer()  # Obtener un identificador único para el publicador
-        channel = request.channel
-        if channel not in self.channel_messages:
-            return pubsub_pb2.Ack(success=False)
-        lock = self._get_lock(channel)
-        semaphore = self._get_semaphore(channel)
-
-        semaphore.acquire()  # Esperar hasta que haya espacio en la cola --1
-
-        with lock:
-            message_queue = self.channel_messages[channel]
-            message_queue.put((publisher_id, request.content))  # Publicar mensaje con ID del publicador
-            logging.info(f"Published message to channel {request.channel}.")
-
-            lock_interuptions = self._get_interuptions_lock()
-            with lock_interuptions:
-                with open("log.txt", 'a') as file:
-                    file.write(f"Published message to channel {request.channel}, by {publisher_id} \n\n")
-
-            return pubsub_pb2.Ack(success=True)
 
     def Subscribe(self, request, context):
         subscriber_id = context.peer()  # Obtener un identificador único para el suscriptor
@@ -112,6 +95,29 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
                     self.subscribers[channel].remove(subscriber_id)
                 logging.info(f"Subscriber removed from channel {channel}. ID: {subscriber_id}")
 
+    def Publish(self, request, context):
+        publisher_id = context.peer()  # Obtener un identificador único para el publicador
+        channel = request.channel
+        if channel not in self.channel_messages:
+            return pubsub_pb2.Ack(success=False)
+        lock = self._get_lock(channel)
+        semaphore = self._get_semaphore(channel)
+        if publisher_id not in self.subscribers[channel]:
+            self.Subscribe(request, context)
+        semaphore.acquire()  # Esperar hasta que haya espacio en la cola --1
+
+        with lock:
+            message_queue = self.channel_messages[channel]
+            message_queue.put((publisher_id, request.content))  # Publicar mensaje con ID del publicador
+            logging.info(f"Published message to channel {request.channel}.")
+
+            lock_interuptions = self._get_interuptions_lock()
+            with lock_interuptions:
+                with open("log.txt", 'a') as file:
+                    file.write(f"Published message to channel {request.channel}, by {publisher_id} \n\n")
+
+            return pubsub_pb2.Ack(success=True)
+
     def ListChannels(self, request, context):
         return pubsub_pb2.ChannelList(channels=self.channels)
 
@@ -132,6 +138,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 def serve():
     logging.basicConfig(level=logging.INFO)
     pubsub_pb2_grpc.add_PubSubServicer_to_server(PubSubService(), server)
+    pubsub_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
     server.add_insecure_port('[::]:50051')
     server.start()
     logging.info("Server started. Listening on port 50051.")

@@ -5,7 +5,7 @@ import warnings
 
 import pubsub_pb2 as pubsub__pb2
 
-GRPC_GENERATED_VERSION = '1.63.0'
+GRPC_GENERATED_VERSION = '1.64.0'
 GRPC_VERSION = grpc.__version__
 EXPECTED_ERROR_RELEASE = '1.65.0'
 SCHEDULED_RELEASE_DATE = 'June 25, 2024'
@@ -104,6 +104,7 @@ def add_PubSubServicer_to_server(servicer, server):
     generic_handler = grpc.method_handlers_generic_handler(
             'pubsub.PubSub', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('pubsub.PubSub', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -182,6 +183,79 @@ class PubSub(object):
             '/pubsub.PubSub/ListChannels',
             pubsub__pb2.Empty.SerializeToString,
             pubsub__pb2.ChannelList.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class HealthStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.Ping = channel.unary_unary(
+                '/pubsub.Health/Ping',
+                request_serializer=pubsub__pb2.Empty.SerializeToString,
+                response_deserializer=pubsub__pb2.Pong.FromString,
+                _registered_method=True)
+
+
+class HealthServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def Ping(self, request, context):
+        """Envía un Ping al servidor para comprobar el estado de la conexión
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_HealthServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'Ping': grpc.unary_unary_rpc_method_handler(
+                    servicer.Ping,
+                    request_deserializer=pubsub__pb2.Empty.FromString,
+                    response_serializer=pubsub__pb2.Pong.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'pubsub.Health', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('pubsub.Health', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class Health(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def Ping(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/pubsub.Health/Ping',
+            pubsub__pb2.Empty.SerializeToString,
+            pubsub__pb2.Pong.FromString,
             options,
             channel_credentials,
             insecure,
