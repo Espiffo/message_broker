@@ -7,6 +7,8 @@ import pubsub_pb2_grpc
 import threading
 import queue
 
+import sys
+server_stopped = False
 
 class HealthServicer(pubsub_pb2_grpc.HealthServicer):
     def Ping(self, request, context):
@@ -43,7 +45,7 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
         return self.semaphores[channel]
 
     def _get_interuptions_lock(self):  # Obtener el semáforo para un canal
-        return self.interuptions_lock
+        return self.interuptions_lock        
 
     def Subscribe(self, request, context):
         subscriber_id = context.peer()  # Obtener un identificador único para el suscriptor
@@ -126,12 +128,31 @@ server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
 
 def signal_handler(signal, frame):
-    print('Recibiendo señal de parada, cerrando el servidor...')
-    server.stop(10)  # Proporciona 10 segundos de gracia para que los threads terminen
+    global server_stopped
+    if not server_stopped:
+        print('Recibiendo señal de parada, cerrando el servidor...')
+        try:
+            server.stop(10)# Proporciona 10 segundos de gracia para que los threads terminen
+        except grpc.RpcError as e:
+            print(f"Error al detener el servidor: {e}")
+            sys.exit(1)
+        server_stopped=True
+
+        # Iterate through all threads and terminate them
+        for thread in threading.enumerate():
+            if thread != threading.current_thread():
+                print(f"Terminando thread: {thread.name}")
+                thread.join(timeout=10)  # Wait for thread to terminate
+                if thread.is_alive():
+                    print(f"Thread {thread.name} no pudo ser terminado.")
+                    thread.terminate()
+                    print(f"thread [{thread}] is terminated")  # Terminate the thread forcibly (not recommended)
+        sys.exit(0)
 
 
 # Configurar el manejo de señales
 signal.signal(signal.SIGINT, signal_handler)
+
 signal.signal(signal.SIGTERM, signal_handler)
 
 
@@ -147,8 +168,9 @@ def serve():
     except KeyboardInterrupt:
         print('Detenido por interrupción del teclado')
     finally:
-        server.stop(10)  # Asegurarse de llamar stop() también aquí para limpieza
+        #server.stop(10)  # Asegurarse de llamar stop() también aquí para limpieza
         print('Servidor cerrado correctamente.')
+        sys.exit(0)
 
 
 if __name__ == '__main__':

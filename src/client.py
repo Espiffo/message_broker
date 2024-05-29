@@ -42,7 +42,8 @@ def listen_for_messages(stub, health_stub, selected_channel, connection_state):
             if check_connection(health_stub):
                 connection_state.set_connected(True)
                 for message in stub.Subscribe(pubsub_pb2.Channel(name=selected_channel)):
-                    print(f"Received message on channel '{selected_channel}': {message.content}")
+                    with GLOBAL_interuptions_lock:##################################################################################
+                        print(f"Received message on channel '{selected_channel}': {message.content}")
                     backoff = 1  # Reset backoff after successful connection
 
         except grpc.RpcError as e:
@@ -56,8 +57,8 @@ def send_messages(stub, selected_channel, connection_state):
     while True:
 
         connection_state.wait_for_connection()  # Esperar a que la conexión esté disponible
-
-        input_text = input("Enter message to send (type 'exit' to quit): ")
+        with GLOBAL_interuptions_lock:##################################################################################
+            input_text = input("Enter message to send (type 'exit' to quit): ")
         if input_text.lower() == 'exit':
             break
 

@@ -1,2 +1,4 @@
-Server started. Listening on port 50051.Subscriber added to channel test. ID: ipv4:127.0.0.1:39534 
+Server started. Listening on port 50051.Subscriber added to channel test. ID: ipv6:%5B::1%5D:47238 
+
+Published message to channel test, by ipv6:%5B::1%5D:47238 
 
