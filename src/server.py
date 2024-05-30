@@ -12,6 +12,7 @@ import sys
 server_stopped = False
 stop_event = Event()
 
+
 class HealthServicer(pubsub_pb2_grpc.HealthServicer):
     def Ping(self, request, context):
         return pubsub_pb2.Pong(message="pong")
@@ -131,21 +132,25 @@ server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
 def signal_handler(signal, frame):
     global server_stopped
+    global server
 
     if not server_stopped:
-        print('Recibiendo señal de parada, cerrando el servidor...')
+        print('\nRecibiendo señal de parada, cerrando el servidor...')
         server_stopped = True
         stop_event.set()
-
+        server.stop(5)
+        
         # Terminate all threads
         for thread in threading.enumerate():
             if thread != threading.current_thread():
-                print(f"Terminando thread: {thread.name}")
-                thread.join(timeout=10)
                 if thread.is_alive():
-                    print(f"Thread {thread.name} no pudo ser terminado.")
-                    #thread.terminate()
-                    print(f"--------------------[{thread.name}]")
+                    if(thread.name!="Thread-1 (_serve)"):
+                        print(f"\n-{thread.name}- was communicating with SERVER")
+                        #thread.terminate()
+                        print("\033[93mWARNING:\033[0m Terminating communication with ",end="")
+                        print(f"-{thread.name}-")
+                else:
+                    thread.join()
     sys.exit(0)
 
 # Configurar el manejo de señales
@@ -167,10 +172,12 @@ def serve():
         server.wait_for_termination()
     except KeyboardInterrupt:
         print('Detenido por interrupción del teclado')
+        server.stop(5)
     finally:
-        server.stop(5)  # Asegurarse de llamar stop() también aquí para limpieza
-        print('Servidor cerrado correctamente.')
-        sys.exit(0)
+        server.stop(5)
+        # Asegurarse de llamar stop() también aquí para limpieza
+        print('\nPress [Ctrl+C] to kill the server.')
+        return 0
 
 
 if __name__ == '__main__':
