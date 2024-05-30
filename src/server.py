@@ -1,6 +1,8 @@
 import logging
 import signal
 from concurrent import futures
+from time import sleep
+
 import grpc
 import pubsub_pb2
 import pubsub_pb2_grpc
@@ -51,6 +53,7 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
         return self.interuptions_lock        
 
     def Subscribe(self, request, context):
+        alive_flag = 0
         subscriber_id = context.peer()  # Obtener un identificador único para el suscriptor
         channel = request.name
         if channel not in self.channel_messages:
@@ -72,6 +75,10 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
                 with lock:
                     message_queue = self.channel_messages[channel]
                     if message_queue.empty():
+                        alive_flag = alive_flag + 1
+                        if alive_flag == 5:
+                            yield pubsub_pb2.Message(channel=channel, content="Alive")
+                            alive_flag = 0
                         continue
                     publisher_id, msg = message_queue.get()  # Obtener mensaje de la cola del canal
                     semaphore.release()  # Liberar un espacio en el semáforo
@@ -144,10 +151,10 @@ def signal_handler(signal, frame):
         for thread in threading.enumerate():
             if thread != threading.current_thread():
                 if thread.is_alive():
-                    if(thread.name!="Thread-1 (_serve)"):
+                    if thread.name != "Thread-1 (_serve)":
                         print(f"\n-{thread.name}- was communicating with SERVER")
-                        #thread.terminate()
-                        print("\033[93mWARNING:\033[0m Terminating communication with ",end="")
+                        # thread.terminate()
+                        print("\033[93mWARNING:\033[0m Terminating communication with ", end="")
                         print(f"-{thread.name}-")
                 else:
                     thread.join()

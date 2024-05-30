@@ -7,6 +7,7 @@ import threading
 
 GLOBAL_interuptions_lock = threading.Lock()
 
+
 class ConnectionState:
     def __init__(self):
         self.condition = threading.Condition()
@@ -23,6 +24,7 @@ class ConnectionState:
             if connected:
                 self.condition.notify_all()  # Notificar a todos los hilos en espera cuando la conexión esté establecida
 
+
 def check_connection(health_stub):
     try:
         health_stub.Ping(pubsub_pb2.Empty())
@@ -30,6 +32,7 @@ def check_connection(health_stub):
         return True
     except grpc.RpcError as e:
         raise e
+
 
 def listen_for_messages(stub, health_stub, selected_channel, connection_state, stop_event):
     backoff = 1
@@ -40,8 +43,9 @@ def listen_for_messages(stub, health_stub, selected_channel, connection_state, s
                 connection_state.set_connected(True)
                 for message in stub.Subscribe(pubsub_pb2.Channel(name=selected_channel)):
                     with GLOBAL_interuptions_lock:
-                        print(f"Received message on channel '{selected_channel}': {message.content}")
-                    backoff = 1  # Reset backoff after successful connection
+                        if message.content != "Alive":
+                            print(f"Received message on channel '{selected_channel}': {message.content}")
+                        backoff = 1  # Reset backoff after successful connection
                     if stop_event.is_set():
                         break
         except grpc.RpcError as e:
@@ -52,6 +56,7 @@ def listen_for_messages(stub, health_stub, selected_channel, connection_state, s
                 print(f"Connection lost, attempting to reconnect in {backoff} seconds...")
                 time.sleep(backoff)
                 backoff = min(backoff * 2, max_backoff)
+
 
 def send_messages(stub, selected_channel, connection_state, stop_event):
     while not stop_event.is_set():
@@ -70,12 +75,14 @@ def send_messages(stub, selected_channel, connection_state, stop_event):
             print(f"Failed to send message: {e}")
             connection_state.set_connected(False)  # Asegúrate de actualizar el estado si la conexión falla al enviar
 
+
 def run():
     channel = grpc.insecure_channel('localhost:50051')
     stub = pubsub_pb2_grpc.PubSubStub(channel)
     health_stub = pubsub_pb2_grpc.HealthStub(channel)
     connection_state = ConnectionState()
     stop_event = Event()
+    listener_thread = None
 
     try:
         # Obtener y mostrar la lista de canales disponibles
@@ -99,16 +106,19 @@ def run():
 
         listener_thread = Thread(target=listen_for_messages, args=(stub, health_stub, selected_channel, connection_state, stop_event))
         listener_thread.start()
-
         send_messages(stub, selected_channel, connection_state, stop_event)
 
+    except grpc.RpcError as e:
+        print(f"No se ha podido conectar con el servidor, verifique que se encuentre activo. {e.code()}")
     except KeyboardInterrupt:
         print("\nInterrupción del programa recibida. Cerrando...")
 
     finally:
         stop_event.set()  # Indica a los hilos que deben detenerse
-        listener_thread.join(timeout=2)
+        if listener_thread is not None:
+            listener_thread.join()
         channel.close()  # Asegúrate de cerrar el canal adecuadamente al finalizar.
+
 
 if __name__ == '__main__':
     run()
