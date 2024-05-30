@@ -5,10 +5,12 @@ import grpc
 import pubsub_pb2
 import pubsub_pb2_grpc
 import threading
+from threading import Event
 import queue
 
 import sys
 server_stopped = False
+stop_event = Event()
 
 class HealthServicer(pubsub_pb2_grpc.HealthServicer):
     def Ping(self, request, context):
@@ -129,28 +131,25 @@ server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
 def signal_handler(signal, frame):
     global server_stopped
+
     if not server_stopped:
         print('Recibiendo señal de parada, cerrando el servidor...')
-        try:
-            server.stop(10)# Proporciona 10 segundos de gracia para que los threads terminen
-        except grpc.RpcError as e:
-            print(f"Error al detener el servidor: {e}")
-            sys.exit(1)
-        server_stopped=True
+        server_stopped = True
+        stop_event.set()
 
-        # Iterate through all threads and terminate them
+        # Terminate all threads
         for thread in threading.enumerate():
             if thread != threading.current_thread():
                 print(f"Terminando thread: {thread.name}")
-                thread.join(timeout=10)  # Wait for thread to terminate
+                thread.join(timeout=10)
                 if thread.is_alive():
                     print(f"Thread {thread.name} no pudo ser terminado.")
-                    thread.terminate()
-                    print(f"thread [{thread}] is terminated")  # Terminate the thread forcibly (not recommended)
-        sys.exit(0)
-
+                    #thread.terminate()
+                    print(f"--------------------[{thread.name}]")
+    sys.exit(0)
 
 # Configurar el manejo de señales
+
 signal.signal(signal.SIGINT, signal_handler)
 
 signal.signal(signal.SIGTERM, signal_handler)
@@ -163,12 +162,13 @@ def serve():
     server.add_insecure_port('[::]:50051')
     server.start()
     logging.info("Server started. Listening on port 50051.")
+
     try:
         server.wait_for_termination()
     except KeyboardInterrupt:
         print('Detenido por interrupción del teclado')
     finally:
-        #server.stop(10)  # Asegurarse de llamar stop() también aquí para limpieza
+        server.stop(5)  # Asegurarse de llamar stop() también aquí para limpieza
         print('Servidor cerrado correctamente.')
         sys.exit(0)
 
