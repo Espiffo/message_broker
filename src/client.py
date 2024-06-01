@@ -6,7 +6,7 @@ from threading import Thread, Event
 import threading
 
 GLOBAL_interuptions_lock = threading.Lock()
-
+my_message = []
 
 class ConnectionState:
     def __init__(self):
@@ -57,7 +57,7 @@ def get_channel_selection(stub):
     return selected_channels
 
 
-def listen_for_messages(stub, health_stub, selected_channel, connection_state, stop_event):
+def listen_for_messages(stub, health_stub, selected_channel, connection_state, stop_event, my_message):
     backoff = 1
     max_backoff = 32
     while not stop_event.is_set():
@@ -67,7 +67,8 @@ def listen_for_messages(stub, health_stub, selected_channel, connection_state, s
                 for message in stub.Subscribe(pubsub_pb2.Channel(name=selected_channel)):
                     # with GLOBAL_interuptions_lock:
                     if message.content != "Alive":
-                        print(f"Received message on channel '{selected_channel}': {message.content}")
+                        #print(f"Received message on channel '{selected_channel}': {message.content}")
+                        my_message.append(f"Received message on channel '{selected_channel}': {message.content}")
                     backoff = 1  # Reset backoff after successful connection
                     if stop_event.is_set():
                         break
@@ -81,17 +82,33 @@ def listen_for_messages(stub, health_stub, selected_channel, connection_state, s
                 backoff = min(backoff * 2, max_backoff)
 
 
-def send_messages(stub, selected_channels, connection_state, stop_event):
+def send_messages(stub, selected_channels, connection_state, stop_event, my_message):
     while not stop_event.is_set():
         connection_state.wait_for_connection()  # Esperar a que la conexión esté disponible
 
-        # with GLOBAL_interuptions_lock:
+        #with GLOBAL_interuptions_lock:
         # Mostrar los canales disponibles para enviar mensajes
-        print("Canales disponibles para enviar mensajes:")
-        for i, channel in enumerate(selected_channels):
-            print(f"{i + 1}. {channel}")
+        print('\n')
+        for i in my_message:
+            print(i)
+        print('\n\n')
 
-        channel_index = int(input("Seleccione el canal para enviar el mensaje: ")) - 1
+        flag_to_val = 0
+        while flag_to_val == 0:
+            print("Canales disponibles para enviar mensajes:")
+            for i, channel in enumerate(selected_channels):
+                print(f"{i + 1}. {channel}")
+    
+            try:
+                channel_index = int(input("Seleccione el canal para enviar el mensaje: ")) - 1
+        
+                if 0 <= channel_index < len(selected_channels):
+                    flag_to_val = 1
+                else:
+                    print("Por favor, seleccione un índice válido.\n")
+            except ValueError:
+                print("Por favor, ingrese un número válido.\n")
+
         selected_channel = selected_channels[channel_index]
 
         input_text = input("Enter message to send (type 'exit' to quit): ")
@@ -107,12 +124,15 @@ def send_messages(stub, selected_channels, connection_state, stop_event):
             connection_state.set_connected(False)  # Asegúrate de actualizar el estado si la conexión falla al enviar
 
 
+
 def run():
     channel = grpc.insecure_channel('[::]:50051')
     stub = pubsub_pb2_grpc.PubSubStub(channel)
     health_stub = pubsub_pb2_grpc.HealthStub(channel)
     connection_state = ConnectionState()
     stop_event = Event()
+    
+    global my_message
 
     try:
         selected_channels = get_channel_selection(stub)
@@ -120,11 +140,11 @@ def run():
 
         for selected_channel in selected_channels:
             thread = Thread(target=listen_for_messages,
-                            args=(stub, health_stub, selected_channel, connection_state, stop_event))
+                            args=(stub, health_stub, selected_channel, connection_state, stop_event, my_message))
             thread.start()
             listener_threads.append(thread)
 
-        send_messages(stub, selected_channels, connection_state, stop_event)
+        send_messages(stub, selected_channels, connection_state, stop_event,my_message)
 
     except grpc.RpcError as e:
         print(f"No se ha podido conectar con el servidor, verifique que se encuentre activo. {e.code()}")

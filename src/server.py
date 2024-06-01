@@ -153,6 +153,7 @@ def serve():
     finally:
         server.stop(5)
         print('\nPress [Ctrl+C] to kill the server.')
+        print('\n bye bye...')
 
 
 if __name__ == '__main__':
