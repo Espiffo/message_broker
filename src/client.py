@@ -6,7 +6,7 @@ from threading import Thread, Event
 import threading
 
 GLOBAL_interuptions_lock = threading.Lock()
-my_message = []
+my_messages = []
 
 class ConnectionState:
     def __init__(self):
@@ -57,7 +57,7 @@ def get_channel_selection(stub):
     return selected_channels
 
 
-def listen_for_messages(stub, health_stub, selected_channel, connection_state, stop_event, my_message):
+def listen_for_messages(stub, health_stub, selected_channel, connection_state, stop_event, my_messages):
     backoff = 1
     max_backoff = 32
     while not stop_event.is_set():
@@ -68,7 +68,7 @@ def listen_for_messages(stub, health_stub, selected_channel, connection_state, s
                     # with GLOBAL_interuptions_lock:
                     if message.content != "Alive":
                         #print(f"Received message on channel '{selected_channel}': {message.content}")
-                        my_message.append(f"Received message on channel '{selected_channel}': {message.content}")
+                        my_messages.append(f"Received message on channel '{selected_channel}': {message.content}")
                     backoff = 1  # Reset backoff after successful connection
                     if stop_event.is_set():
                         break
@@ -82,14 +82,14 @@ def listen_for_messages(stub, health_stub, selected_channel, connection_state, s
                 backoff = min(backoff * 2, max_backoff)
 
 
-def send_messages(stub, selected_channels, connection_state, stop_event, my_message):
+def send_messages(stub, selected_channels, connection_state, stop_event, my_messages):
     while not stop_event.is_set():
         connection_state.wait_for_connection()  # Esperar a que la conexión esté disponible
 
         #with GLOBAL_interuptions_lock:
         # Mostrar los canales disponibles para enviar mensajes
         print('\n')
-        for i in my_message:
+        for i in my_messages:
             print(i)
         print('\n\n')
 
@@ -132,7 +132,7 @@ def run():
     connection_state = ConnectionState()
     stop_event = Event()
     
-    global my_message
+    global my_messages
 
     try:
         selected_channels = get_channel_selection(stub)
@@ -140,11 +140,11 @@ def run():
 
         for selected_channel in selected_channels:
             thread = Thread(target=listen_for_messages,
-                            args=(stub, health_stub, selected_channel, connection_state, stop_event, my_message))
+                            args=(stub, health_stub, selected_channel, connection_state, stop_event, my_messages))
             thread.start()
             listener_threads.append(thread)
 
-        send_messages(stub, selected_channels, connection_state, stop_event,my_message)
+        send_messages(stub, selected_channels, connection_state, stop_event,my_messages)
 
     except grpc.RpcError as e:
         print(f"No se ha podido conectar con el servidor, verifique que se encuentre activo. {e.code()}")
