@@ -27,7 +27,7 @@ if __name__ == "__main__":
     channel_name = "test"  # Asumiendo que 'test' es uno de los canales disponibles
 
     # Crear 20 hilos de publicador
-    for i in range(20):
+    for i in range(5):
         thread = threading.Thread(target=publisher_thread, args=(channel_name,))
         threads.append(thread)
         thread.start()

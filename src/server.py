@@ -28,13 +28,13 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
                          pubsub_pb2.Channel(name="channel2"),
                          pubsub_pb2.Channel(name="channel3")]
 
-        self.channel_messages = {channel.name: queue.Queue(maxsize=100) for channel in
+        self.channel_messages = {channel.name: queue.Queue(maxsize=10) for channel in
                                  self.channels}  # Diccionario para mapear las colas de mensajes
         self.subscribers = {channel.name: [] for channel in
                             self.channels}  # Diccionario para los suscriptores de cada canal
         self.locks = {channel.name: threading.Lock() for channel in
                       self.channels}  # Diccionario para el lock de cada canal
-        self.semaphores = {channel.name: threading.Semaphore(100) for channel in
+        self.semaphores = {channel.name: threading.Semaphore(10) for channel in
                            self.channels}  # Diccionario para el semáforo de cada canal
         self.interuptions_lock = threading.Lock()
         logging.info("PubSubService initialized.")
