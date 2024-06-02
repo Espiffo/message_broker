@@ -1,3 +1,5 @@
+import queue
+
 import grpc
 import pubsub_pb2
 import pubsub_pb2_grpc
@@ -6,7 +8,8 @@ from threading import Thread, Event
 import threading
 
 GLOBAL_interuptions_lock = threading.Lock()
-my_messages = []
+my_messages = queue.Queue()
+
 
 class ConnectionState:
     def __init__(self):
@@ -68,14 +71,14 @@ def listen_for_messages(stub, health_stub, selected_channel, connection_state, s
                     # with GLOBAL_interuptions_lock:
                     if message.content != "Alive":
                         #print(f"Received message on channel '{selected_channel}': {message.content}")
-                        my_messages.append(f"Received message on channel '{selected_channel}': {message.content}")
+                        my_messages.put(f"Received message on channel '{selected_channel}': {message.content}")
                     backoff = 1  # Reset backoff after successful connection
                     if stop_event.is_set():
                         break
         except grpc.RpcError as e:
             if e.code() == grpc.StatusCode.CANCELLED:
                 print(f"Channel Closed!")
-            else:
+            elif e.code() == grpc.StatusCode.UNAVAILABLE:
                 connection_state.set_connected(False)
                 print(f"Connection lost, attempting to reconnect in {backoff} seconds...")
                 time.sleep(backoff)
@@ -87,10 +90,11 @@ def send_messages(stub, selected_channels, connection_state, stop_event, my_mess
         connection_state.wait_for_connection()  # Esperar a que la conexión esté disponible
 
         #with GLOBAL_interuptions_lock:
-        # Mostrar los canales disponibles para enviar mensajes
+        # Mostrar los mensajes que han sido enviados a los
+        # canales suscritos
         print('\n')
-        for i in my_messages:
-            print(i)
+        while not my_messages.empty():
+            print(my_messages.get())
         print('\n\n')
 
         flag_to_val = 0
@@ -122,7 +126,6 @@ def send_messages(stub, selected_channels, connection_state, stop_event, my_mess
         except grpc.RpcError as e:
             print(f"Failed to send message: {e}")
             connection_state.set_connected(False)  # Asegúrate de actualizar el estado si la conexión falla al enviar
-
 
 
 def run():

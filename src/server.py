@@ -76,7 +76,7 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
                                 file.write(f"Message sent to channel {channel}, for subscriber ID: {subscriber_id}\n")
                         yield pubsub_pb2.Message(channel=channel, content=msg)
                     else:
-                        message_queue.put_nowait((publisher_id, msg))
+                        message_queue.put((publisher_id, msg))
 
         finally:
             with threading.Lock():  # Protect access to subscribers list
