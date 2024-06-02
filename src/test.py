@@ -5,6 +5,7 @@ import pubsub_pb2
 import pubsub_pb2_grpc
 import time
 
+
 def publisher_thread(channel_name, server_address="localhost:50051"):
     # Establecer la conexión con el servidor gRPC
     channel = grpc.insecure_channel(server_address)
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     channel_name = "test"  # Asumiendo que 'test' es uno de los canales disponibles
 
     # Crear 20 hilos de publicador
-    for i in range(1):
+    for i in range(10):
         thread = threading.Thread(target=publisher_thread, args=(channel_name,))
         threads.append(thread)
         thread.start()
