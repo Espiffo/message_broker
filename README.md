@@ -8,12 +8,12 @@ carpeta del proyecto cuando ejecute estos comandos).
 
 # En Linux
 
-python3 -m venv venv
+python3 -m venv venv   
 source venv/bin/activate
 
 # En Windows
 
-python -m venv venv
+python -m venv venv  
 .\venv\Scripts\activate
 
 # Estando dentro del entorno virtual 
