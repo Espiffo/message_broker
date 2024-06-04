@@ -1,8 +1,8 @@
 # message_broker
 Segunda tarea programada de Sistemas Operativos
 
-
-1. Crear un entorno virtual
+# Configuración del proyecto
+Crear un entorno virtual
 (Es importante aclarar que debe estar dentro de la 
 carpeta del proyecto cuando ejecute estos comandos).
 
