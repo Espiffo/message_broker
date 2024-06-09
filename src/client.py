@@ -122,7 +122,6 @@ def send_messages(stub, selected_channels, connection_state, stop_event, my_mess
             print("Message sent.")
         except grpc.RpcError as e:
             print(f"Failed to send message: {e}")
-            # connection_state.set_connected(False)  # Asegúrate de actualizar el estado si la conexión falla al enviar
 
 
 def run():

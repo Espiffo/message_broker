@@ -22,9 +22,9 @@ class HealthServicer(pubsub_pb2_grpc.HealthServicer):
 
 class PubSubService(pubsub_pb2_grpc.PubSubServicer):
     def __init__(self):
-        self.channels = [pubsub_pb2.Channel(name="test"),
-                         pubsub_pb2.Channel(name="channel2"),
-                         pubsub_pb2.Channel(name="channel3")]
+        self.channels = [pubsub_pb2.Channel(name="Sucesos"),
+                         pubsub_pb2.Channel(name="Deportes"),
+                         pubsub_pb2.Channel(name="Clima")]
 
         # A thread safe queue for every channel
         self.channel_messages = {channel.name: queue.Queue(maxsize=10) for channel in self.channels}
@@ -66,14 +66,15 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
                     sleep(1)  # Check every second if a message is available
 
                 if message_queue.empty():
-                    yield pubsub_pb2.Message(channel=channel, content="Alive") # Send an alive signal
+                    yield pubsub_pb2.Message(channel=channel, content="Alive")  # Send an alive signal
 
                 else:
                     publisher_id, msg = message_queue.get()
                     if publisher_id != subscriber_id:
                         with self._get_file_lock():
                             with open("log.txt", 'a') as file:
-                                file.write(f"Message sent to channel {channel}, for subscriber ID: {subscriber_id}\n")
+                                file.write(f"Message sent to channel {channel}, for subscriber ID: {subscriber_id}, "
+                                           f"content: {msg}\n")
                         yield pubsub_pb2.Message(channel=channel, content=msg)
                     else:
                         message_queue.put((publisher_id, msg))
@@ -104,7 +105,7 @@ class PubSubService(pubsub_pb2_grpc.PubSubServicer):
         logging.info(f"Published message to channel {request.channel}.")
         with self._get_file_lock():
             with open("log.txt", 'a') as file:
-                file.write(f"Published message to channel {request.channel}, by {publisher_id}\n")
+                file.write(f"Published message {request.content} to channel {request.channel}, by {publisher_id}\n")
 
         return pubsub_pb2.Ack(success=True)
 
@@ -141,9 +142,9 @@ def serve():
     logging.basicConfig(level=logging.INFO)
     pubsub_pb2_grpc.add_PubSubServicer_to_server(PubSubService(), server)
     pubsub_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port('localhost:50051')
     server.start()
-    logging.info("Server started. Listening on port 50051.")
+    logging.info("Server started. Listening on port 50051.\n")
 
     try:
         server.wait_for_termination()

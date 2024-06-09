@@ -1,20 +1,2 @@
-Server started. Listening on port 50051.Subscriber added to channel test. ID: ipv6:%5B::1%5D:38824 
-
-Published message to channel test, by ipv6:%5B::1%5D:55784 
-
-Subscriber added to channel test. ID: ipv6:%5B::1%5D:55784 
-
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:38824 
-
-Published message to channel test, by ipv6:%5B::1%5D:55784 
-
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:38824 
-
-Published message to channel test, by ipv6:%5B::1%5D:55784 
-
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:38824 
-
-Published message to channel test, by ipv6:%5B::1%5D:38824 
-
-Messeage send to channel test, for  subscriber of ID: ipv6:%5B::1%5D:55784 
-
+Server started. Listening on port 50051.Subscriber added to channel test. ID: ipv6:%5B::1%5D:58312
+Subscriber removed from channel test. ID: ipv6:%5B::1%5D:58312
