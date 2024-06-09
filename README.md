@@ -5,9 +5,9 @@ Segunda tarea programada de Sistemas Operativos
 Crear un entorno virtual
 (Es importante aclarar que debe estar dentro de la 
 carpeta del proyecto cuando ejecute estos comandos).
-
+# Para crear el entorno virtual en la carpeta llamada (message_broker-main/message_broker-main), utilice este comando:  
 # En Linux
-# Para crear el entorno virtual en la carpeta llamada (message_broker-main/message_broker-main), utilice este comando:
+
 python3 -m venv venv  
 
 # Para entrar al env
