@@ -112,10 +112,7 @@ def send_messages(stub, selected_channels, connection_state, stop_event, my_mess
 
         selected_channel = selected_channels[channel_index]
 
-        input_text = input("Enter message to send (type 'exit' to quit): ")
-        if input_text.lower() == 'exit':
-            stop_event.set()
-            break
+        input_text = input("Enter message to send: ")
 
         try:
             stub.Publish(pubsub_pb2.Message(channel=selected_channel, content=input_text))

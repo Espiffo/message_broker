@@ -1,2 +1,2 @@
-Server started. Listening on port 50051.Subscriber added to channel test. ID: ipv6:%5B::1%5D:58312
-Subscriber removed from channel test. ID: ipv6:%5B::1%5D:58312
+Server started. Listening on port 50051.Subscriber added to channel Sucesos. ID: ipv4:127.0.0.1:59485
+Published message hola to channel Sucesos, by ipv4:127.0.0.1:59485
