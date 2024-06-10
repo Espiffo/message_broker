@@ -23,4 +23,8 @@ python -m venv venv
 
 pip install -r requirements.txt
 
+# Para cerrar el server son necesarios dos [^C]
+1. Para reflejar la desconexión de cada cliente con sus respectivos hilos
+2. Para cerrar el program server.py como tal
+
 
