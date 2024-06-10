@@ -153,7 +153,7 @@ def serve():
         server.stop(5)
     finally:
         server.stop(5)
-        print('\nPress [Ctrl+C] to kill the server.')
+        print('\nPressed [Ctrl+C], server kill ')
         print('\n bye bye...')
 
 
